@@ -1,15 +1,24 @@
 {
   "name": "ratiborro/otus-user-api",
   "type": "project",
+  "config": {
+    "platform": {
+      "php": "8.2"
+    }
+  },
   "require": {
+    "php": "^8.2",
     "ext-pgsql": "*",
-    "slim/slim": "^4.14",
-    "slim/psr7": "^1.7",
-    "illuminate/database": "^11.22"
+    "ext-pdo": "*",
+    "php-di/php-di": "^7.0",
+    "symfony/http-foundation": "^7.1",
+    "symfony/validator": "^7.1",
+    "doctrine/dbal": "^4.1",
+    "symfony/routing": "^7.1"
   },
   "autoload": {
     "psr-4": {
-      "Ratiborro\\OtusUserApi\\": "src/"
+      "App\\": "src/"
     }
   },
   "authors": [

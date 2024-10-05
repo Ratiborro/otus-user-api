@@ -2,28 +2,18 @@
 
 declare(strict_types=1);
 
+use DI\ContainerBuilder;
+
 require '../vendor/autoload.php';
 
-use Slim\Factory\AppFactory;
-use App\Database;
+const ROOT_DIR = __DIR__;
+const CONFIG_DIR = __DIR__ . '/config/';
 
-$app = AppFactory::create();
-$database = new Database();
+$containerBuilder = new ContainerBuilder();
 
-$app->post('/user', function ($request, $response) use ($database) {
-    // Логика создания пользователя
-});
+$containerBuilder->addDefinitions(require CONFIG_DIR . '/dependencies.php');
 
-$app->get('/user/{id}', function ($request, $response, $id) use ($database) {
-    // Логика получения пользователя
-});
+// Если нужен кэш контейнера (для production)
+// $containerBuilder->enableCompilation(DIR . '/var/cache');
 
-$app->put('/user/{id}', function ($request, $response, $id) use ($database) {
-    // Логика обновления пользователя
-});
-
-$app->delete('/user/{id}', function ($request, $response, $id) use ($database) {
-    // Логика удаления пользователя
-});
-
-$app->run();
+$container = $containerBuilder->build();
