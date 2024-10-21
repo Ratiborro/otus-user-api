@@ -2,27 +2,16 @@
 
 declare(strict_types=1);
 
+use App\Controller\HealthcheckController;
 use App\Controller\UserController;
-use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
+use Slim\App;
 
-return function (RoutingConfigurator $routes): void {
-    $routes->add('get_user', '/api/users/{id}')
-           ->methods(['GET'])
-           ->controller([UserController::class, 'get'])
-           ->requirements(['id' => '\d+']);
+return function (App $app): void {
+    $app->get('/', HealthcheckController::class . ':welcome');
+    $app->get('/api/ping', HealthcheckController::class . ':ping');
 
-    $routes->add('create_user', '/api/users/{id}')
-           ->methods(['POST'])
-           ->controller([UserController::class, 'create'])
-           ->requirements(['id' => '\d+']);
-
-    $routes->add('update_user', '/api/users/{id}')
-           ->methods(['PUT'])
-           ->controller([UserController::class, 'update'])
-           ->requirements(['id' => '\d+']);
-
-    $routes->add('delete_user', '/api/users/{id}')
-           ->methods(['DELETE'])
-           ->controller([UserController::class, 'delete'])
-           ->requirements(['id' => '\d+']);
+    $app->get('/api/users/{id}', UserController::class . ':get');
+    $app->post('/api/users/{id}', UserController::class . ':create');
+    $app->put('/api/users/{id}', UserController::class . ':update');
+    $app->delete('/api/users/{id}', UserController::class . ':delete');
 };

@@ -1,19 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: user
+  name: user-api-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: user
+      app: user-api
   template:
     metadata:
       labels:
-        app: user
+        app: user-api
     spec:
       containers:
-        - name: php-app
+        - name: user-api
           image: ratiborro/otus-user-api:latest
           ports:
             - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /api/ping
+              port: 8000
+            # initialDelaySeconds: 180 # Задержка перед первой проверкой
+            # periodSeconds: 30        # Периодичность проверок
+            # failureThreshold: 3      # Количество неудачных проверок перед тем, как приложение будет считаться не готовым
+          livenessProbe:
+            httpGet:
+              path: /api/ping
+              port: 8000
+            # initialDelaySeconds: 180 # Задержка перед первой проверкой, чтобы дать время приложению подняться
+            # periodSeconds: 30        # Периодичность проверок
+            # failureThreshold: 3      # Количество неудачных проверок перед перезапуском контейнера

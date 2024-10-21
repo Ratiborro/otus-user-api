@@ -1,0 +1,49 @@
+version: '3.x'
+
+services:
+  nginx:
+    image: nginx:latest
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php-fpm
+
+  php-fpm:
+    image: php:8.2-fpm
+    ports:
+      - "9001:9000"
+    volumes:
+      - .:/var/www
+    working_dir: /var/www
+    environment:
+      PHP_INI_DIR: /usr/local/etc/php
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DRIVER: pdo_pgsql
+      DB_ADAPTER: pgsql
+      DB_DATABASE: otus_user_api
+      DB_USERNAME: otus
+      DB_PASSWORD: otuspass
+    depends_on:
+      - postgres
+    # Установка зависимостей и необходимых расширений
+    command: >
+      /bin/sh -c "apt-get update && 
+                  apt-get install -y libpq-dev curl &&
+                  docker-php-ext-install pdo pdo_pgsql &&
+                  curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer &&
+                  php-fpm && 
+                  true"
+
+  postgres:
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

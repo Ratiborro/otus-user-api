@@ -13,9 +13,13 @@ final readonly class UserService
         private UserRepository $userRepository
     ) {}
 
-    public function getUser(int $id): User
+    public function getUser(int $id): ?User
     {
         $userData = $this->userRepository->find($id);
+        if (false === $userData) {
+            return null;
+        }
+
         return new User(
             $userData['id'],
             $userData['username'],

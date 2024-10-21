@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure;
+namespace App\Infrastructure\Db;
 
-use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DriverManager;
 use Doctrine\DBAL\Result;
 
-final readonly class DatabaseConnection
+final readonly class DbConnection
 {
-    private Connection     $connection;
-    private DatabaseConfig $configLoader;
+    private Connection $connection;
+    private DbConfig   $configLoader;
 
-    public function __construct(DatabaseConfig $configLoader)
+    public function __construct(DbConfig $configLoader)
     {
         $this->configLoader = $configLoader;
     }

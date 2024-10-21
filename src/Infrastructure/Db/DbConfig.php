@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure;
+namespace App\Infrastructure\Db;
 
 use InvalidArgumentException;
 
-final readonly class DatabaseConfig
+final readonly class DbConfig
 {
     private array $config;
 
@@ -22,10 +22,7 @@ final readonly class DatabaseConfig
 
     public function getConfig(string $connectionName = 'default'): array
     {
-        if (!isset($this->config['connections'][$connectionName])) {
-            throw new InvalidArgumentException("Connection '{$connectionName}' not found in database configuration.");
-        }
-
-        return $this->config[$connectionName];
+        return $this->config['connections'][$connectionName]
+            ?? throw new InvalidArgumentException("Connection '{$connectionName}' not found in database configuration.");
     }
 }

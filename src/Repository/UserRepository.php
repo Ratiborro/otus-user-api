@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Infrastructure\DatabaseConnection;
+use App\Infrastructure\Db\DbConnection;
 use RuntimeException;
 
 final readonly class UserRepository
 {
-    private DatabaseConnection $dbConnection;
+    private DbConnection $dbConnection;
 
-    public function __construct(DatabaseConnection $dbConnection)
+    public function __construct(DbConnection $dbConnection)
     {
         $this->dbConnection = $dbConnection;
     }
 
-    public function find(int $id): array
+    public function find(int $id): array|false
     {
         $sql = '
-            SELECT u."id", u."username", u."firstName", u."lastName", u."email", u."phone"
+            SELECT u."id", u."username", u."first_name", u."last_name", u."email", u."phone"
             FROM otus.users u
             WHERE u.id = :id
         ';
@@ -30,19 +30,19 @@ final readonly class UserRepository
     public function create(array $data): array
     {
         $sql = '
-            INSERT INTO otus.users ("username", "firstName", "lastName", "email", "phone")
+            INSERT INTO otus.users ("username", "first_name", "last_name", "email", "phone")
             VALUES (:username, :firstName, :lastName, :email, :phone)
             ON CONFLICT ("email", "phone") 
             DO UPDATE SET 
-                "firstName" = EXCLUDED."firstName",
-                "lastName" = EXCLUDED."lastName"
+                "first_name" = EXCLUDED."first_name",
+                "last_name" = EXCLUDED."last_name"
             RETURNING id
         ';
 
         $values = [
             'username' => $data['username'],
-            'firstName' => $data['firstName'],
-            'lastName' => $data['lastName'],
+            'first_name' => $data['firstName'],
+            'last_name' => $data['lastName'],
             'email' => $data['email'],
             'phone' => $data['phone'],
         ];
@@ -63,8 +63,8 @@ final readonly class UserRepository
             UPDATE otus.users u
             SET 
                 username = :username,
-                firstName = :firstName,
-                lastName = :lastName,
+                first_name = :firstName,
+                last_name = :lastName,
                 email = :email,
                 phone = :phone
             WHERE u.id = :id
@@ -72,8 +72,8 @@ final readonly class UserRepository
 
         $values = [
             'username' => $data['username'],
-            'firstName' => $data['firstName'],
-            'lastName' => $data['lastName'],
+            'first_name' => $data['first_name'],
+            'last_name' => $data['last_name'],
             'email' => $data['email'],
             'phone' => $data['phone'],
             'id' => $id,
