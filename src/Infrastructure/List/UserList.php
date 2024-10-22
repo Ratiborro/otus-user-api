@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\List;
+namespace App\Infrastructure\List;
 
 class UserList extends AbstractList
 {

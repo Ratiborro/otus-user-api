@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Validator;
+namespace App\Infrastructure\Validator;
 
-use App\Validator\Rule\MobilePhone;
+use App\Infrastructure\Validator\Rule\MobilePhone;
 use Symfony\Component\Validator\Constraints\Collection;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-final readonly class UserUpdateValidator extends AbstractValidator
+final readonly class UserCreateValidator extends AbstractValidator
 {
     public function getConstraints(): Collection
     {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Mapper;
+namespace App\Infrastructure\Mapper;
 
 use App\Entity\User;
 

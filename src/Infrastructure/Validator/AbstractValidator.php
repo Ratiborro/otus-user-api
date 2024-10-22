@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Validator;
+namespace App\Infrastructure\Validator;
 
-use App\Exception\ValidationException;
 use Symfony\Component\Validator\Constraints\Collection;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;

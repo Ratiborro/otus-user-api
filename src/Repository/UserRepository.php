@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Exception\DbException;
 use App\Infrastructure\Db\DbConnection;
-use Doctrine\DBAL\Exception;
+use App\Infrastructure\Exception\DbException;
 
 final readonly class UserRepository
 {

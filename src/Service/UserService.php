@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\User;
-use App\List\UserList;
+use App\Infrastructure\List\UserList;
 use App\Repository\UserRepository;
 
 final readonly class UserService

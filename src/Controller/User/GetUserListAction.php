@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\User;
 
 use App\Controller\Controller;
-use App\Mapper\UserBaseMapper;
+use App\Infrastructure\Mapper\UserBaseMapper;
 use App\Service\UserService;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;

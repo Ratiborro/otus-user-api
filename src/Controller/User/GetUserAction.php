@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace App\Controller\User;
 
 use App\Controller\Controller;
-use App\Exception\UserNotFoundException;
-use App\Mapper\UserBaseMapper;
+use App\Infrastructure\Exception\UserNotFoundException;
+use App\Infrastructure\Mapper\UserBaseMapper;
 use App\Service\UserService;
-use App\Validator\UserCreateValidator;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\List;
+namespace App\Infrastructure\List;
 
+use ArrayIterator;
 use Countable;
 use IteratorAggregate;
 use Traversable;
-use ArrayIterator;
 
 abstract class AbstractList implements Countable, IteratorAggregate
 {
