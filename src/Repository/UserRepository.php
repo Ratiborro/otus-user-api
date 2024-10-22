@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
+use App\Exception\DbException;
 use App\Infrastructure\Db\DbConnection;
-use RuntimeException;
+use Doctrine\DBAL\Exception;
 
 final readonly class UserRepository
 {
@@ -19,37 +20,64 @@ final readonly class UserRepository
     public function find(int $id): array|false
     {
         $sql = '
-            SELECT u."id", u."username", u."first_name", u."last_name", u."email", u."phone"
+            SELECT u."id", u."username", u."firstName", u."lastName", u."email", u."phone"
             FROM otus.users u
-            WHERE u.id = :id
+            WHERE u."id" = :id
         ';
         $result = $this->dbConnection->executeQuery($sql, ['id' => $id]);
-        return $result->fetchOne();
+
+        return $result->fetchAssociative();
+    }
+
+    /**
+     * @param int[] $ids
+     */
+    public function findMany(array $ids): array
+    {
+        $sql = '
+            SELECT u."id", u."username", u."firstName", u."lastName", u."email", u."phone"
+            FROM otus.users u
+            WHERE u."id" IN (:ids)
+        ';
+        $result = $this->dbConnection->executeQuery($sql, ['ids' => $ids]);
+
+        return $result->fetchAllAssociative();
+    }
+
+    public function findAll(): array
+    {
+        $sql = '
+            SELECT u."id", u."username", u."firstName", u."lastName", u."email", u."phone"
+            FROM otus.users u
+        ';
+        $result = $this->dbConnection->executeQuery($sql, []);
+
+        return $result->fetchAllAssociative();
     }
 
     public function create(array $data): array
     {
         $sql = '
-            INSERT INTO otus.users ("username", "first_name", "last_name", "email", "phone")
+            INSERT INTO otus.users ("username", "firstName", "lastName", "email", "phone")
             VALUES (:username, :firstName, :lastName, :email, :phone)
             ON CONFLICT ("email", "phone") 
             DO UPDATE SET 
-                "first_name" = EXCLUDED."first_name",
-                "last_name" = EXCLUDED."last_name"
-            RETURNING id
+                "firstName" = EXCLUDED."firstName",
+                "lastName" = EXCLUDED."lastName"
+            RETURNING "id"
         ';
 
         $values = [
             'username' => $data['username'],
-            'first_name' => $data['firstName'],
-            'last_name' => $data['lastName'],
+            'firstName' => $data['firstName'],
+            'lastName' => $data['lastName'],
             'email' => $data['email'],
             'phone' => $data['phone'],
         ];
 
         $result = $this->dbConnection->executeQuery($sql, $values)->fetchAssociative();
         if ($result === false) {
-            throw new RuntimeException('Failed to create user.');
+            throw new DbException('Failed to create user.');
         }
 
         $data['id'] = $result['id'];
@@ -62,18 +90,18 @@ final readonly class UserRepository
         $sql = '
             UPDATE otus.users u
             SET 
-                username = :username,
-                first_name = :firstName,
-                last_name = :lastName,
-                email = :email,
-                phone = :phone
-            WHERE u.id = :id
+                "username" = :username,
+                "firstName" = :firstName,
+                "lastName" = :lastName,
+                "email" = :email,
+                "phone" = :phone
+            WHERE u."id" = :id
         ';
 
         $values = [
             'username' => $data['username'],
-            'first_name' => $data['first_name'],
-            'last_name' => $data['last_name'],
+            'firstName' => $data['firstName'],
+            'lastName' => $data['lastName'],
             'email' => $data['email'],
             'phone' => $data['phone'],
             'id' => $id,
@@ -81,19 +109,21 @@ final readonly class UserRepository
 
         $result = $this->dbConnection->executeStatement($sql, $values);
         if ($result !== 1) {
-            throw new RuntimeException('Failed to update user.');
+            throw new DbException('Failed to update user.');
         }
+
+        $data['id'] = $id;
 
         return $data;
     }
 
     public function delete(int $id): void
     {
-        $sql = 'DELETE FROM otus.users u WHERE u.id = :id';
+        $sql = 'DELETE FROM otus.users u WHERE u."id" = :id';
 
         $result = $this->dbConnection->executeStatement($sql, ['id' => $id]);
         if ($result !== 1) {
-            throw new RuntimeException('Failed to delete user.');
+            throw new DbException('Failed to delete user.');
         }
     }
 }
