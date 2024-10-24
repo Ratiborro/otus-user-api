@@ -19,15 +19,15 @@ spec:
             - containerPort: 8000
           readinessProbe:
             httpGet:
-              path: /api/ping
+              path: /
               port: 8000
-            # initialDelaySeconds: 180 # Задержка перед первой проверкой
-            # periodSeconds: 30        # Периодичность проверок
-            # failureThreshold: 3      # Количество неудачных проверок перед тем, как приложение будет считаться не готовым
+            initialDelaySeconds: 180 # Задержка перед первой проверкой
+            periodSeconds: 30        # Периодичность проверок
+            failureThreshold: 3      # Количество неудачных проверок перед тем, как приложение будет считаться не готовым
           livenessProbe:
             httpGet:
-              path: /api/ping
+              path: /
               port: 8000
-            # initialDelaySeconds: 180 # Задержка перед первой проверкой, чтобы дать время приложению подняться
-            # periodSeconds: 30        # Периодичность проверок
-            # failureThreshold: 3      # Количество неудачных проверок перед перезапуском контейнера
+            initialDelaySeconds: 180 # Задержка перед первой проверкой, чтобы дать время приложению подняться
+            periodSeconds: 30        # Периодичность проверок
+            failureThreshold: 3      # Количество неудачных проверок перед перезапуском контейнера
