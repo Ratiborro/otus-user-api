@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: user-api-deployment
+  name: my-php-app
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: user-api
+      app: my-php-app
   template:
     metadata:
       labels:
-        app: user-api
+        app: my-php-app
     spec:
       containers:
-        - name: user-api
-          image: ratiborro/otus-user-api:latest
+        - name: my-php-app
+          image: ratiborro/otus-user-api
           ports:
-            - containerPort: 8000
+            - containerPort: 80

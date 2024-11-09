@@ -1,13 +1,23 @@
 controller:
   kind: DaemonSet
-
   reportNodeInternalIp: true
-
   hostPort:
     enabled: true
     ports:
       http: 80
       https: 443
-
   service:
     type: NodePort
+  config:
+    enable-snippets: "true"
+annotations:
+  nginx.ingress.kubernetes.io/configuration-snippet: |
+    root /var/www/public;
+    workingDir: /var/www/public;
+    index index.php index.html;
+  nginx.ingress.kubernetes.io/server-snippet: |
+    location / {
+      root /var/www/public;
+      index index.php index.html;
+      try_files $uri $uri/ /index.php?$query_string;
+    }
