@@ -21,6 +21,7 @@ kubectl get pods -n u --show-kind=true -w
 - ingress-nginx-controller стартует около 120 секунд. Ждем
 - Применяем манифест деплоймента и ждем READY-состояния
 ```bash
+kubectl apply -f nginx-configmap.yaml -n u
 kubectl apply -f deployment.yaml -n u
 kubectl get pods -n u --show-kind=true -w
 ```
@@ -32,7 +33,7 @@ kubectl get service -n u
 - Применяем манифест ingress-а
 ```bash
 kubectl apply -f ingress.yaml -n u
-kubectl get ingress healthcheck-ingress -n u
+kubectl get ingress user-api-ingress -n u
 ```
 - Запускаем туннель
 ```bash

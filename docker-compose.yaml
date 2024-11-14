@@ -1,5 +1,3 @@
-version: '3.x'
-
 services:
   nginx:
     image: nginx:latest
@@ -12,7 +10,9 @@ services:
       - php-fpm
 
   php-fpm:
-    image: php:8.2-fpm
+    build:
+      context: .  # Указывает директорию с Dockerfile
+    image: ratiborro/otus-user-api:latest
     ports:
       - "9001:9000"
     volumes:

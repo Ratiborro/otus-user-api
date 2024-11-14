@@ -1,11 +1,6 @@
-Устанавливаем зависимости проекта
-```bash
-composer install
-```
-
 Билдим докер-образ php-приложения
 ```bash
-docker build -t otus-user-api .
+docker-compose build
 ```
 
 Запускаем докер на 80 порту

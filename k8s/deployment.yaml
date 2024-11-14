@@ -15,5 +15,17 @@ spec:
       containers:
         - name: user-api
           image: ratiborro/otus-user-api:latest
+          workingDir: /var/www/public
           ports:
             - containerPort: 8000
+          volumeMounts:
+            - mountPath: /etc/nginx/conf.d/default.conf
+              name: nginx-cm
+              subPath: default.conf
+      volumes:
+        - configMap:
+            items:
+              - key: nginx.conf
+                path: default.conf
+            name: nginx-cm
+          name: nginx-cm
