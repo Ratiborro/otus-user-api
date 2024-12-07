@@ -1,9 +1,27 @@
-Билдим докер-образ php-приложения
-```bash
-docker-compose build
-```
+## Запуск проекта
 
-Запускаем докер на 80 порту
 ```bash
-docker run -d -p 8000:80 otus-user-api
+# Запускаем миникуб
+minikube start
+minikube addons enable ingress
+
+cd k8s
+
+# Устанавливаем Postgres
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+helm install postgres bitnami/postgresql -f values.yaml
+
+# Последовательно применяем манифесты
+kubectl apply -f secret.yaml
+kubectl apply -f configmap.yaml
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+kubectl apply -f ingress.yaml
+
+# Запускаем джобу для миграций БД
+kubectl apply -f migrations.yaml
+
+# Запускаем тоннель
+minikube tunnel
 ```

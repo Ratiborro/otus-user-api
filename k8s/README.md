@@ -1,101 +1,93 @@
-# Запуск проекта:
-
-- Запускаем миникуб "с нуля":
 ```bash
 minikube stop
 minikube delete --all
 minikube start
-```
-- Создаем пространство имен для работы приложения
-```bash
-kubectl create namespace u
-```
-- Устанавливаем nginx через helm
-```bash
+
+# Либо включаем аддон ingress
+minikube addons enable ingress
+# Либо устанавливаем ingress через helm (но не одновременно!!!)
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx/
 helm repo update
-helm install nginx ingress-nginx/ingress-nginx --namespace u -f nginx-ingress.yaml
-kubectl get daemonset -n u
-kubectl get pods -n u --show-kind=true -w
+helm install nginx ingress-nginx/ingress-nginx -f nginx-ingress.yaml
+
+# Устанавливаем Postgres
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+helm install postgres bitnami/postgresql -f values.yaml
+
+minikube status
 ```
-- ingress-nginx-controller стартует около 120 секунд. Ждем
-- Применяем манифест деплоймента и ждем READY-состояния
+
 ```bash
-kubectl apply -f nginx-configmap.yaml -n u
-kubectl apply -f deployment.yaml -n u
-kubectl get pods -n u --show-kind=true -w
-```
-- Применяем манифест сервиса
-```bash
-kubectl apply -f service.yaml -n u
-kubectl get service -n u
-```
-- Применяем манифест ingress-а
-```bash
-kubectl apply -f ingress.yaml -n u
-kubectl get ingress user-api-ingress -n u
-```
-- Запускаем туннель
-```bash
+ # Запускаем деплоймент
+kubectl apply -f deployment.yaml
+ # Убеждаемся в успешном запуске
+kubectl get pods -w
+ # Запускаем сервис для деплоймента
+kubectl apply -f service.yaml
+ # Убеждаемся в успешном запуске сервиса
+kubectl get svc php-app
+ # Смотрим IP подов
+kubectl get pods -o wide
+ # Убеждаемся в том, что сервис связался с подами (в Endpoints должны быть прописаны IP и порты подов)
+kubectl describe svc php-app
+# Запускаем ingress
+kubectl apply -f ingress.yaml
+# Убеждаемся, что ингресс создан
+kubectl get ingress
+# Получаем IP-адрес ingress (сервис с именем nginx-ingress-nginx-controller)
+kubectl get svc
+# Получаем секреты БД
+kubectl apply -f secret.yaml
+# Запускаем другие конфиги БД
+kubectl apply -f configmap.yaml
+# Проверяем переменные окружения БД
+kubectl exec -it <php-app-pod-name> -- env | grep DB_
+# Запускаем миграции БД
+kubectl apply -f migrations.yaml
+# Проверяем статус джобы с миграциями
+kubectl get jobs
+# Смотрим логи джобы
+kubectl logs job/db-migrations
+# Если джоба зафейлилась, удаляем ей и запускаем заново через apply
+kubectl delete job db-migrations
+
+
+
+
+# Запускаем хранилище (persistent volume)
+kubectl apply -f pv.yaml
+# Запускаем pvc (persistent volume claim)
+kubectl apply -f pvc.yaml
+# Добавляем pv и pvc в deployment
+kubectl apply -f deployment.yaml
+# Убедимся, что pvc привязался к pv (статус bound)
+kubectl get pvc
+# Запускаем синхронизацию контейнера с локальной машиной
+minikube mount ../:/mnt/data/php-volume
+
+
+
+# Запускаем тоннель
 minikube tunnel
 ```
-## Готово! Вы восхитительны!
 
-Можно запускать http://arch.homework и наслаждаться ответом приложения.
+Результат в браузере по адресу http://arch.homework/
 
-Также нужно убедиться, что в /etc/hosts прописан DNS (для мака и винды)
-```
-127.0.0.1 arch.homework
-```
-а на линуксе вместо локалхоста нужно прописать ip, полученный командой
-```
-minkube ip
-```
-
-
-
-## Дебаг
-Проверяем, что ингресс работает без ошибок:
+Быстрый рестарт
 ```bash
-kubectl describe ingress healthcheck-ingress -n u
-```
-Проверяем, что сервис работает без ошибок:
-```bash
-kubectl describe service healthcheck-service -n u
-```
-Проверяем, что поды деплоймента работают без ошибок: 
-```bash
-kubectl get pods -n u --show-kind=true
-kubectl describe pod/healthcheck-deployment-584d6b4589-kgcl2 -n u
-```
-Заходим в любой под и проверяем стартовую директорию, после чего стараемся достучаться до сервиса изнутри кластера по IP:
-```bash
-kubectl get pods -n u --show-kind=true
-kubectl exec -ti pod/healthcheck-deployment-584d6b4589-kgcl2 -n u -- bash
-curl -s http://10.106.210.110/
-curl -s http://arch.homework/
-```
+minikube stop
+minikube delete --all
+minikube start
+minikube addons enable ingress
+kubectl apply -f deployment.yaml
+kubectl get pods -o wide -w
+kubectl apply -f service.yaml
+kubectl get pods -o wide
+kubectl describe svc php-app
+kubectl apply -f ingress.yaml
+# + minikube tunnel
 
-
-### Другие команды для дебага
-
-### Всё должно заработать, но вот несколько команд на случай дебага:
-```bash
-kubectl exec -it pod/healthcheck-deployment-584d6b4589-575ng -n u -- bash
-kubectl delete namespace u
-kubectl get namespace u
-helm uninstall nginx -n u
-kubectl get events -n u
-kubectl get all -n u
-kubectl get pods -n u
-kubectl get svc -n u
-kubectl get ingress -n u
-kubectl describe pods/nginx-ingress-nginx-controller-256c9 -n u
-kubectl logs svc/nginx-ingress-nginx-controller-admission -n u
-kubectl delete pod -l app.kubernetes.io/instance=nginx -n u
-
-kubectl create rolebinding endpointslice-controller-access \
---clusterrole=system:controller:endpointslice-controller \
---serviceaccount=kube-system:endpointslice-controller \
---namespace=u
+kubectl rollout restart deployment php-app
+kubectl delete pod -l app=php-app
 ```

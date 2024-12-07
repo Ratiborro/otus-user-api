@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  DB_HOST: "postgres-postgresql"
+  DB_DRIVER: "pdo_pgsql"
+  DB_ADAPTER: "pgsql"
+  DB_PORT: "5432"

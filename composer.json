@@ -24,7 +24,6 @@
     }
   },
   "scripts": {
-    "docker": "docker run -p 8000:8000 ratiborro/otus-user-api",
     "migration:create": "vendor/bin/phinx create $1 -c config/migrations.php",
     "migrate": "vendor/bin/phinx migrate -c config/migrations.php",
     "migrate:rollback": "vendor/bin/phinx rollback -c config/migrations.php",

@@ -1,0 +1,4 @@
+auth:
+  username: otus
+  password: otuspass
+  database: otus_user_api

@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migrations
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      containers:
+        - name: php-app
+          image: ratiborro/otus-user-api:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - |
+              composer config --global use-parent-dir true
+              composer migrate
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: db-credentials
+      # restartPolicy: OnFailure
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 0
